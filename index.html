@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aegis Systems — Ciberseguridad y Cumplimiento para el Sector Sanitario</title>
+    <meta name="description" content="Plataforma GRC automatizada con IA para hospitales y dispositivos médicos conectados. Cumplimiento NIS2, ENS e ISO 27001.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <style>
+        /* ── Reset & Base ─────────────────────────────────────── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --navy:    #141E32;
+            --navy-90: #1a2640;
+            --blue:    #32648C;
+            --cyan:    #50A0B4;
+            --teal:    #285A64;
+            --slate:   #6E7078;
+            --light:   #F4F6F8;
+            --white:   #FFFFFF;
+            --border:  #E2E6EA;
+            --success: #2ECC71;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--navy);
+            background: var(--white);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        img { display: block; max-width: 100%; }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── Navbar ───────────────────────────────────────────── */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(20,30,50,.97);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(80,160,180,.15);
+            height: 68px;
+        }
+        .navbar .container {
+            display: flex; align-items: center; justify-content: space-between; height: 100%;
+        }
+        .navbar-brand {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .navbar-brand img { height: 36px; width: 36px; }
+        .navbar-brand span {
+            font-size: 18px; font-weight: 700; color: var(--white); letter-spacing: .3px;
+        }
+        .navbar-links { display: flex; align-items: center; gap: 32px; }
+        .navbar-links a {
+            font-size: 14px; font-weight: 500; color: rgba(255,255,255,.7);
+            transition: color .2s;
+        }
+        .navbar-links a:hover { color: var(--cyan); }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 600; border-radius: 6px;
+            padding: 10px 22px; transition: all .2s; cursor: pointer; border: none;
+        }
+        .btn-primary { background: var(--cyan); color: var(--white); }
+        .btn-primary:hover { background: #45919f; transform: translateY(-1px); }
+        .btn-outline {
+            background: transparent; color: var(--cyan);
+            border: 1.5px solid rgba(80,160,180,.5);
+        }
+        .btn-outline:hover { border-color: var(--cyan); background: rgba(80,160,180,.08); }
+        .btn-dark { background: var(--navy); color: var(--white); }
+        .btn-dark:hover { background: var(--navy-90); }
+        .btn-lg { padding: 14px 32px; font-size: 15px; border-radius: 8px; }
+        .mobile-menu { display: none; background: none; border: none; cursor: pointer; }
+        .mobile-menu svg { stroke: var(--white); }
+
+        /* ── Hero ─────────────────────────────────────────────── */
+        .hero {
+            padding: 160px 0 100px;
+            background: linear-gradient(168deg, var(--navy) 0%, #1a2d42 55%, var(--teal) 100%);
+            position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse 600px 400px at 75% 30%, rgba(80,160,180,.10) 0%, transparent 70%),
+                radial-gradient(ellipse 400px 300px at 20% 80%, rgba(50,100,140,.08) 0%, transparent 70%);
+        }
+        .hero-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 60px; align-items: center; position: relative; z-index: 1;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(80,160,180,.12); border: 1px solid rgba(80,160,180,.25);
+            border-radius: 20px; padding: 6px 16px; font-size: 13px; color: var(--cyan);
+            font-weight: 500; margin-bottom: 24px;
+        }
+        .hero-badge span { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
+        .hero h1 {
+            font-size: 46px; font-weight: 700; color: var(--white);
+            line-height: 1.15; margin-bottom: 20px; letter-spacing: -.5px;
+        }
+        .hero h1 em {
+            font-style: normal;
+            background: linear-gradient(90deg, var(--cyan), #7ecdd8);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 17px; color: rgba(255,255,255,.65); line-height: 1.7;
+            margin-bottom: 36px; max-width: 520px;
+        }
+        .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+        .hero-visual { display: flex; justify-content: center; align-items: center; }
+
+        /* ── Dashboard mock ───────────────────────────────────── */
+        .dashboard-mock {
+            width: 100%; max-width: 520px;
+            background: var(--navy-90);
+            border: 1px solid rgba(80,160,180,.2);
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0,0,0,.35);
+        }
+        .dash-topbar {
+            display: flex; align-items: center; gap: 8px;
+            padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,.06);
+        }
+        .dash-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .dash-dot.r { background: #ff5f57; } .dash-dot.y { background: #febc2e; } .dash-dot.g { background: #28c840; }
+        .dash-url {
+            flex: 1; margin-left: 8px; background: rgba(255,255,255,.05);
+            border-radius: 4px; padding: 4px 12px; font-size: 11px;
+            font-family: 'JetBrains Mono', monospace; color: rgba(255,255,255,.35);
+        }
+        .dash-body { padding: 20px; }
+        .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .dash-header h4 { font-size: 13px; color: rgba(255,255,255,.8); font-weight: 600; }
+        .dash-status {
+            font-size: 11px; color: var(--success); font-weight: 600;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .dash-status::before {
+            content: ''; width: 6px; height: 6px; border-radius: 50%;
+            background: var(--success); display: inline-block;
+        }
+        .dash-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+        .dash-card {
+            background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06);
+            border-radius: 8px; padding: 14px;
+        }
+        .dash-card-label { font-size: 10px; color: rgba(255,255,255,.35); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+        .dash-card-val { font-size: 22px; font-weight: 700; color: var(--white); }
+        .dash-card-val.green { color: var(--success); }
+        .dash-card-val.cyan { color: var(--cyan); }
+        .dash-bar-group { display: flex; flex-direction: column; gap: 8px; }
+        .dash-bar-item label { font-size: 11px; color: rgba(255,255,255,.4); display: flex; justify-content: space-between; margin-bottom: 3px; }
+        .dash-bar-track { height: 6px; background: rgba(255,255,255,.06); border-radius: 3px; overflow: hidden; }
+        .dash-bar-fill { height: 100%; border-radius: 3px; }
+
+        /* ── Compliance bar ───────────────────────────────────── */
+        .compliance-bar {
+            background: var(--light); border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border); padding: 28px 0;
+        }
+        .compliance-bar .container {
+            display: flex; align-items: center; justify-content: center;
+            gap: 48px; flex-wrap: wrap;
+        }
+        .compliance-item {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 13px; font-weight: 600; color: var(--slate); letter-spacing: .3px;
+        }
+        .compliance-icon {
+            width: 36px; height: 36px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 700; color: var(--white);
+        }
+        .ci-nis2 { background: #2C5F8A; } .ci-ens { background: #8B1A1A; }
+        .ci-iso { background: #1A6B4A; } .ci-rgpd { background: #5B3A8C; }
+        .ci-ai { background: #C47A20; }
+
+        /* ── Section base ─────────────────────────────────────── */
+        .section { padding: 96px 0; }
+        .section-label {
+            font-size: 13px; font-weight: 600; color: var(--cyan);
+            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;
+        }
+        .section-title {
+            font-size: 34px; font-weight: 700; line-height: 1.25;
+            margin-bottom: 16px; letter-spacing: -.3px;
+        }
+        .section-subtitle {
+            font-size: 16px; color: var(--slate); max-width: 600px; line-height: 1.7;
+        }
+        .section-header { margin-bottom: 56px; }
+        .section-header.center { text-align: center; }
+        .section-header.center .section-subtitle { margin: 0 auto; }
+
+        /* ── Problem section ──────────────────────────────────── */
+        .problem { background: var(--light); }
+        .problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .problem-card {
+            background: var(--white); border: 1px solid var(--border);
+            border-radius: 12px; padding: 32px 28px;
+            transition: box-shadow .2s, border-color .2s;
+        }
+        .problem-card:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,.06);
+            border-color: rgba(80,160,180,.3);
+        }
+        .problem-icon {
+            width: 44px; height: 44px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 20px; font-size: 20px;
+        }
+        .pi-red { background: rgba(220,53,69,.08); color: #dc3545; }
+        .pi-orange { background: rgba(253,126,20,.08); color: #fd7e14; }
+        .pi-blue { background: rgba(50,100,140,.08); color: var(--blue); }
+        .problem-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+        .problem-card p { font-size: 14px; color: var(--slate); line-height: 1.65; }
+        .problem-stat {
+            margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);
+            font-size: 13px; color: var(--blue); font-weight: 600;
+        }
+
+        /* ── Features ─────────────────────────────────────────── */
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+        .feature-card {
+            border: 1px solid var(--border); border-radius: 12px; padding: 36px 28px;
+            transition: all .25s; position: relative; overflow: hidden;
+        }
+        .feature-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--blue), var(--cyan));
+            opacity: 0; transition: opacity .25s;
+        }
+        .feature-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,.07); border-color: rgba(80,160,180,.25); }
+        .feature-card:hover::before { opacity: 1; }
+        .feature-num {
+            font-size: 12px; font-weight: 700; color: var(--cyan);
+            font-family: 'JetBrains Mono', monospace; margin-bottom: 16px;
+        }
+        .feature-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+        .feature-card p { font-size: 14px; color: var(--slate); line-height: 1.65; margin-bottom: 20px; }
+        .feature-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag {
+            font-size: 11px; font-weight: 600; padding: 4px 10px;
+            border-radius: 4px; background: var(--light); color: var(--blue);
+        }
+
+        /* ── How it works ─────────────────────────────────────── */
+        .how { background: var(--navy); color: var(--white); }
+        .how .section-label { color: var(--cyan); }
+        .how .section-subtitle { color: rgba(255,255,255,.5); }
+        .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; position: relative; }
+        .steps::before {
+            content: ''; position: absolute; top: 40px;
+            left: calc(33.33% - 16px); right: calc(33.33% - 16px);
+            height: 2px; background: rgba(80,160,180,.2);
+        }
+        .step { text-align: center; position: relative; }
+        .step-num {
+            width: 56px; height: 56px; border-radius: 50%;
+            background: rgba(80,160,180,.12); border: 2px solid rgba(80,160,180,.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: 700; color: var(--cyan);
+            margin: 0 auto 20px; position: relative; z-index: 1;
+        }
+        .step h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+        .step p { font-size: 14px; color: rgba(255,255,255,.5); line-height: 1.6; max-width: 280px; margin: 0 auto; }
+
+        /* ── Pricing ──────────────────────────────────────────── */
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .pricing-card {
+            border: 1px solid var(--border); border-radius: 12px;
+            padding: 36px 28px; position: relative;
+        }
+        .pricing-card.featured {
+            border-color: var(--cyan);
+            box-shadow: 0 8px 40px rgba(80,160,180,.12);
+        }
+        .pricing-badge {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: var(--cyan); color: var(--white);
+            font-size: 11px; font-weight: 700; padding: 4px 14px;
+            border-radius: 12px; text-transform: uppercase; letter-spacing: .5px;
+        }
+        .pricing-name { font-size: 13px; font-weight: 600; color: var(--slate); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .pricing-target { font-size: 14px; color: var(--blue); font-weight: 500; margin-bottom: 16px; }
+        .pricing-price { font-size: 36px; font-weight: 700; margin-bottom: 4px; }
+        .pricing-price span { font-size: 15px; font-weight: 500; color: var(--slate); }
+        .pricing-note { font-size: 13px; color: var(--slate); margin-bottom: 24px; }
+        .pricing-features { list-style: none; margin-bottom: 28px; }
+        .pricing-features li {
+            font-size: 14px; padding: 8px 0;
+            border-bottom: 1px solid var(--light);
+            display: flex; align-items: flex-start; gap: 10px;
+        }
+        .pricing-features li::before { content: '✓'; color: var(--cyan); font-weight: 700; flex-shrink: 0; }
+        .pricing-card .btn { width: 100%; }
+
+        /* ── Testimonial ──────────────────────────────────────── */
+        .testimonial { background: var(--light); }
+        .testimonial-card { max-width: 740px; margin: 0 auto; text-align: center; }
+        .testimonial-quote {
+            font-size: 20px; font-weight: 500; line-height: 1.7;
+            color: var(--navy); margin-bottom: 28px; font-style: italic;
+        }
+        .testimonial-author { display: flex; align-items: center; justify-content: center; gap: 14px; }
+        .testimonial-avatar {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            display: flex; align-items: center; justify-content: center;
+            color: var(--white); font-weight: 700; font-size: 16px;
+        }
+        .testimonial-name { font-weight: 700; font-size: 15px; }
+        .testimonial-role { font-size: 13px; color: var(--slate); }
+
+        /* ── CTA ──────────────────────────────────────────────── */
+        .cta {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+            padding: 80px 0; text-align: center; color: var(--white);
+        }
+        .cta h2 { font-size: 32px; font-weight: 700; margin-bottom: 14px; }
+        .cta p { font-size: 16px; color: rgba(255,255,255,.6); margin-bottom: 32px; max-width: 520px; margin-left: auto; margin-right: auto; }
+        .cta-actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+
+        /* ── Footer ───────────────────────────────────────────── */
+        .footer {
+            background: var(--navy); color: rgba(255,255,255,.45);
+            padding: 56px 0 32px; font-size: 13px;
+        }
+        .footer-grid {
+            display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px; margin-bottom: 40px;
+        }
+        .footer-brand p { margin-top: 14px; line-height: 1.7; max-width: 300px; }
+        .footer-col h4 {
+            font-size: 12px; font-weight: 700; color: var(--white);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col li { margin-bottom: 10px; }
+        .footer-col a { color: rgba(255,255,255,.45); transition: color .2s; font-size: 13px; }
+        .footer-col a:hover { color: var(--cyan); }
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,.08);
+            padding-top: 24px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+        }
+        .footer-legal { display: flex; gap: 24px; }
+        .footer-legal a { color: rgba(255,255,255,.35); font-size: 12px; }
+        .footer-legal a:hover { color: rgba(255,255,255,.6); }
+
+        /* ── Responsive ───────────────────────────────────────── */
+        @media (max-width: 900px) {
+            .hero-grid { grid-template-columns: 1fr; text-align: center; }
+            .hero p { margin-left: auto; margin-right: auto; }
+            .hero-actions { justify-content: center; }
+            .hero-visual { display: none; }
+            .hero h1 { font-size: 32px; }
+            .problem-grid, .features-grid, .pricing-grid, .steps { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
+            .steps::before { display: none; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .navbar-links { display: none; }
+            .mobile-menu { display: block; }
+            .compliance-bar .container { gap: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════ NAVBAR ═══════════════ -->
+<nav class="navbar">
+    <div class="container">
+        <a href="#" class="navbar-brand">
+            <img src="../aegis_logo.png" alt="Aegis Systems">
+            <span>Aegis Systems</span>
+        </a>
+        <div class="navbar-links">
+            <a href="#problema">El Problema</a>
+            <a href="#plataforma">Plataforma</a>
+            <a href="#como-funciona">Cómo Funciona</a>
+            <a href="#precios">Precios</a>
+            <a href="#contacto" class="btn btn-primary">Solicitar Demo</a>
+        </div>
+        <button class="mobile-menu" aria-label="Menú">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+                <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+        </button>
+    </div>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-grid">
+            <div>
+                <div class="hero-badge">
+                    <span></span> Plataforma certificada ENS Nivel Alto
+                </div>
+                <h1>Ciberseguridad y cumplimiento <em>automatizado</em> para el sector sanitario</h1>
+                <p>Aegis unifica la gestión normativa (NIS2, ENS, RGPD) con la protección de dispositivos médicos conectados en una sola plataforma. Reduce un 60% la carga operativa de tu departamento de TI.</p>
+                <div class="hero-actions">
+                    <a href="#contacto" class="btn btn-primary btn-lg">Solicitar una demo</a>
+                    <a href="#plataforma" class="btn btn-outline btn-lg">Ver plataforma</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="dashboard-mock">
+                    <div class="dash-topbar">
+                        <div class="dash-dot r"></div>
+                        <div class="dash-dot y"></div>
+                        <div class="dash-dot g"></div>
+                        <div class="dash-url">app.aegis-systems.es/dashboard</div>
+                    </div>
+                    <div class="dash-body">
+                        <div class="dash-header">
+                            <h4>Panel de Cumplimiento</h4>
+                            <div class="dash-status">Conforme</div>
+                        </div>
+                        <div class="dash-cards">
+                            <div class="dash-card">
+                                <div class="dash-card-label">Activos IoMT</div>
+                                <div class="dash-card-val cyan">2.847</div>
+                            </div>
+                            <div class="dash-card">
+                                <div class="dash-card-label">Cumplimiento NIS2</div>
+                                <div class="dash-card-val green">94%</div>
+                            </div>
+                            <div class="dash-card">
+                                <div class="dash-card-label">Alertas activas</div>
+                                <div class="dash-card-val">12</div>
+                            </div>
+                        </div>
+                        <div class="dash-bar-group">
+                            <div class="dash-bar-item">
+                                <label><span>ENS Alto</span><span style="color:rgba(255,255,255,.6)">97%</span></label>
+                                <div class="dash-bar-track"><div class="dash-bar-fill" style="width:97%;background:var(--success)"></div></div>
+                            </div>
+                            <div class="dash-bar-item">
+                                <label><span>ISO 27001</span><span style="color:rgba(255,255,255,.6)">91%</span></label>
+                                <div class="dash-bar-track"><div class="dash-bar-fill" style="width:91%;background:var(--cyan)"></div></div>
+                            </div>
+                            <div class="dash-bar-item">
+                                <label><span>RGPD — Datos de Salud</span><span style="color:rgba(255,255,255,.6)">100%</span></label>
+                                <div class="dash-bar-track"><div class="dash-bar-fill" style="width:100%;background:var(--success)"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ COMPLIANCE BAR ═══════════════ -->
+<div class="compliance-bar">
+    <div class="container">
+        <div class="compliance-item">
+            <div class="compliance-icon ci-nis2">NIS2</div>
+            Directiva NIS2
+        </div>
+        <div class="compliance-item">
+            <div class="compliance-icon ci-ens">ENS</div>
+            Esquema Nacional de Seguridad
+        </div>
+        <div class="compliance-item">
+            <div class="compliance-icon ci-iso">ISO</div>
+            ISO 27001
+        </div>
+        <div class="compliance-item">
+            <div class="compliance-icon ci-rgpd">RGPD</div>
+            Protección de Datos
+        </div>
+        <div class="compliance-item">
+            <div class="compliance-icon ci-ai">AI</div>
+            Reglamento Europeo de IA
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════ PROBLEM ═══════════════ -->
+<section class="section problem" id="problema">
+    <div class="container">
+        <div class="section-header center">
+            <p class="section-label">El problema</p>
+            <h2 class="section-title">El sector sanitario se enfrenta a una tormenta perfecta</h2>
+            <p class="section-subtitle">La convergencia de presión regulatoria, vulnerabilidad tecnológica y escasez de talento exige una respuesta automatizada e inmediata.</p>
+        </div>
+        <div class="problem-grid">
+            <div class="problem-card">
+                <div class="problem-icon pi-red">⚖</div>
+                <h3>Presión Regulatoria sin Precedentes</h3>
+                <p>La Directiva NIS2 clasifica a las entidades sanitarias como «esenciales» e impone responsabilidad personal a los directivos. Las sanciones alcanzan el 2% de la facturación global o 10 millones de euros.</p>
+                <div class="problem-stat">Notificación obligatoria de incidentes en 24 h</div>
+            </div>
+            <div class="problem-card">
+                <div class="problem-icon pi-orange">🏥</div>
+                <h3>Vulnerabilidad del IoMT</h3>
+                <p>Bombas de infusión, resonancias y monitores de constantes operan con firmwares legados sin soporte. Cada dispositivo conectado es un posible vector de entrada para ataques de ransomware.</p>
+                <div class="problem-stat">+70% de dispositivos médicos sin parches disponibles</div>
+            </div>
+            <div class="problem-card">
+                <div class="problem-icon pi-blue">👤</div>
+                <h3>Escasez Crítica de Talento</h3>
+                <p>No hay suficientes expertos en ciberseguridad (CISOs) para gestionar manualmente la complejidad normativa actual. Las auditorías anuales en Excel ya no son una opción viable.</p>
+                <div class="problem-stat">Déficit de 3,5 M de profesionales en ciberseguridad global</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ FEATURES ═══════════════ -->
+<section class="section" id="plataforma">
+    <div class="container">
+        <div class="section-header center">
+            <p class="section-label">La plataforma</p>
+            <h2 class="section-title">Un escudo digital inteligente para la sanidad</h2>
+            <p class="section-subtitle">Tres módulos integrados que cubren cumplimiento normativo, seguridad de dispositivos y visibilidad operativa desde un único panel.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-num">01</div>
+                <h3>Cumplimiento Automatizado</h3>
+                <p>Motor de IA explicable que mapea tu postura de seguridad contra los controles del ENS, NIS2, ISO 27001, RGPD y el AI Act. Automatiza el 80% de la recolección de evidencias para auditorías.</p>
+                <div class="feature-tags">
+                    <span class="tag">NIS2</span>
+                    <span class="tag">ENS</span>
+                    <span class="tag">ISO 27001</span>
+                    <span class="tag">AI Act</span>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-num">02</div>
+                <h3>Seguridad IoMT</h3>
+                <p>Agentes pasivos en Rust que descubren e inventarían cada dispositivo médico en tiempo real. Modo «solo escucha» que detecta anomalías en protocolos clínicos sin interferir en la operación.</p>
+                <div class="feature-tags">
+                    <span class="tag">HL7</span>
+                    <span class="tag">DICOM</span>
+                    <span class="tag">FHIR</span>
+                    <span class="tag">Zero Trust</span>
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-num">03</div>
+                <h3>Panel de Control Unificado</h3>
+                <p>Vista centralizada con indicadores de riesgo (KRI), estado de certificaciones, alertas priorizadas e informes ejecutivos listos para presentar al comité de dirección.</p>
+                <div class="feature-tags">
+                    <span class="tag">Dashboard</span>
+                    <span class="tag">KRI</span>
+                    <span class="tag">Informes</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+<section class="section how" id="como-funciona">
+    <div class="container">
+        <div class="section-header center">
+            <p class="section-label">Implementación</p>
+            <h2 class="section-title" style="color:var(--white)">En producción en semanas, no en meses</h2>
+            <p class="section-subtitle">Un despliegue progresivo diseñado para la realidad hospitalaria. Sin riesgo para las operaciones clínicas.</p>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <h3>Auditoría Pasiva</h3>
+                <p>Desplegamos agentes en modo mirror port. Sin tocar la red. En 48 horas recibes un informe real de vulnerabilidades de tu infraestructura.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <h3>Integración Clínica</h3>
+                <p>Conectamos con tus sistemas de historia clínica vía HL7 FHIR para contextualizar cada activo dentro de su función asistencial real.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <h3>Automatización</h3>
+                <p>Activamos las políticas de cumplimiento y la generación automática de informes. Tu equipo revisa; Aegis trabaja.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ PRICING ═══════════════ -->
+<section class="section" id="precios">
+    <div class="container">
+        <div class="section-header center">
+            <p class="section-label">Planes</p>
+            <h2 class="section-title">Seguridad adaptada a tu escala</h2>
+            <p class="section-subtitle">Desde startups HealthTech hasta grandes hospitales. Facturación anual transparente.</p>
+        </div>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <p class="pricing-name">Starter</p>
+                <p class="pricing-target">Startups HealthTech</p>
+                <p class="pricing-price">450 €<span> /mes</span></p>
+                <p class="pricing-note">Facturación anual. IVA no incluido.</p>
+                <ul class="pricing-features">
+                    <li>Cumplimiento RGPD y LSSI</li>
+                    <li>Panel de control básico</li>
+                    <li>Generación automática de evidencias</li>
+                    <li>Soporte por correo electrónico</li>
+                    <li>Onboarding digital guiado</li>
+                </ul>
+                <a href="#contacto" class="btn btn-outline">Empezar</a>
+            </div>
+            <div class="pricing-card featured">
+                <div class="pricing-badge">Más popular</div>
+                <p class="pricing-name">Professional</p>
+                <p class="pricing-target">Clínicas y Laboratorios</p>
+                <p class="pricing-price">1.200 €<span> /mes</span></p>
+                <p class="pricing-note">Facturación anual. IVA no incluido.</p>
+                <ul class="pricing-features">
+                    <li>ENS Nivel Medio + ISO 27001</li>
+                    <li>Inventario completo de activos IT</li>
+                    <li>Informes válidos para auditorías oficiales</li>
+                    <li>Soporte prioritario</li>
+                    <li>Customer Success Manager</li>
+                </ul>
+                <a href="#contacto" class="btn btn-primary">Solicitar demo</a>
+            </div>
+            <div class="pricing-card">
+                <p class="pricing-name">Enterprise</p>
+                <p class="pricing-target">Hospitales</p>
+                <p class="pricing-price">3.500 €<span> /mes</span></p>
+                <p class="pricing-note">Desde. Variable según activos IoMT.</p>
+                <ul class="pricing-features">
+                    <li>NIS2 completo + ENS Alto + AI Act</li>
+                    <li>Módulo IoMT con agentes pasivos Rust</li>
+                    <li>Integración HL7 / DICOM / FHIR</li>
+                    <li>Despliegue Edge Computing on-premise</li>
+                    <li>SLA 99,9% · Soporte dedicado 24/7</li>
+                </ul>
+                <a href="#contacto" class="btn btn-dark">Contactar ventas</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ TESTIMONIAL ═══════════════ -->
+<section class="section testimonial">
+    <div class="container">
+        <div class="testimonial-card">
+            <p class="testimonial-quote">«Antes dedicábamos seis semanas al año a preparar la documentación para la auditoría ENS. Ahora el informe se genera solo y mi equipo puede centrarse en lo que realmente importa: la seguridad del paciente.»</p>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">MR</div>
+                <div>
+                    <p class="testimonial-name">Dra. Marta Ruiz</p>
+                    <p class="testimonial-role">CISO — Grupo Hospitalario Levante</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ CTA ═══════════════ -->
+<section class="cta" id="contacto">
+    <div class="container">
+        <h2>¿Tu hospital está preparado para la NIS2?</h2>
+        <p>Solicita una auditoría de riesgo gratuita. Desplegamos un agente pasivo en tu red y en 48 horas recibes un informe completo de tu postura de seguridad.</p>
+        <div class="cta-actions">
+            <a href="mailto:jcarlos.valera@um.es" class="btn btn-primary btn-lg">Solicitar auditoría gratuita</a>
+            <a href="#plataforma" class="btn btn-outline btn-lg" style="border-color:rgba(255,255,255,.25);color:var(--white)">Ver la plataforma</a>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="#" class="navbar-brand" style="margin-bottom: 4px;">
+                    <img src="../aegis_logo.png" alt="Aegis Systems" style="height:32px;width:32px;">
+                    <span style="font-size:16px;font-weight:700;color:var(--white)">Aegis Systems</span>
+                </a>
+                <p>Plataforma de Gobierno, Riesgo y Cumplimiento automatizado con IA para el sector sanitario y la seguridad IoMT.</p>
+                <p style="margin-top:12px;">CEEIM — Murcia, España</p>
+                <p>contacto@aegis-systems.es</p>
+            </div>
+            <div class="footer-col">
+                <h4>Plataforma</h4>
+                <ul>
+                    <li><a href="#">Cumplimiento GRC</a></li>
+                    <li><a href="#">Seguridad IoMT</a></li>
+                    <li><a href="#">Panel de Control</a></li>
+                    <li><a href="#">Integraciones</a></li>
+                    <li><a href="#">API</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Normativas</h4>
+                <ul>
+                    <li><a href="#">Directiva NIS2</a></li>
+                    <li><a href="#">ENS</a></li>
+                    <li><a href="#">ISO 27001</a></li>
+                    <li><a href="#">RGPD</a></li>
+                    <li><a href="#">Reglamento de IA</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Empresa</h4>
+                <ul>
+                    <li><a href="#">Sobre nosotros</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Recursos</a></li>
+                    <li><a href="#">Contacto</a></li>
+                    <li><a href="#">Empleo</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 Aegis Systems, S.L. Todos los derechos reservados. CIF: B-XXXXXXXX</span>
+            <div class="footer-legal">
+                <a href="#">Aviso legal</a>
+                <a href="#">Privacidad</a>
+                <a href="#">Cookies</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
